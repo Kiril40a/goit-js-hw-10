@@ -14,7 +14,6 @@ const options = {
       console.log(selectedDates[0]);
 
       if (selectedDates[0] <= new Date()) {
-        // alert("Please choose a date in the future");
         iziToast.show({
             title: 'Hey',
             message: 'Please choose a date in the future'
@@ -27,11 +26,7 @@ const options = {
   },
 };
 
-
-
-document.querySelector("#datetime-picker").addEventListener("focus", () => {
-    flatpickr("#datetime-picker", options);
-})
+flatpickr("#datetime-picker", options);
 
 function addLeadingZero(value) { 
     return String(value).padStart(2, '0');  
@@ -56,26 +51,24 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
-
-
 btnStart.addEventListener('click', () => {
-        btnStart.setAttribute("disabled", 1);
-        document.querySelector("#datetime-picker").setAttribute("disabled", 1)
-        let intervalID = setInterval(() => {
-            let diffTimes = convertMs(userSelectedDate - new Date());
-            document.querySelector(".value[data-days]").innerText = addLeadingZero(diffTimes.days);
-            document.querySelector(".value[data-hours]").innerText = addLeadingZero(diffTimes.hours);
-            document.querySelector(".value[data-minutes]").innerText = addLeadingZero(diffTimes.minutes);
-            document.querySelector(".value[data-seconds]").innerText = addLeadingZero(diffTimes.seconds);
-
-            if (userSelectedDate - new Date() < 999) {
-                clearInterval(intervalID);
-                btnStart.removeAttribute("disabled");
-                document.querySelector("#datetime-picker").removeAttribute("disabled")
-            }
+  btnStart.setAttribute("disabled", 1);
+  document.querySelector("#datetime-picker").setAttribute("disabled", 1);
+  let remainingMs = userSelectedDate - new Date();
+  let diffTimes = convertMs(remainingMs);
+  
+  let intervalID = setInterval(() => {
+    remainingMs -= 1000;
+    diffTimes = convertMs(remainingMs);
+          document.querySelector(".value[data-days]").innerText = addLeadingZero(diffTimes.days);
+          document.querySelector(".value[data-hours]").innerText = addLeadingZero(diffTimes.hours);
+          document.querySelector(".value[data-minutes]").innerText = addLeadingZero(diffTimes.minutes);
+          document.querySelector(".value[data-seconds]").innerText = addLeadingZero(diffTimes.seconds);
+          if (userSelectedDate - new Date() < 999) {
+              clearInterval(intervalID);
+              btnStart.removeAttribute("disabled");
+              document.querySelector("#datetime-picker").removeAttribute("disabled")
+          }
         }, 1000);
 })
 
